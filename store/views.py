@@ -1,9 +1,76 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.views import View
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from ecommerce.settings import MESSAGE_TAGS
+from .forms import *
+
 from django.http import JsonResponse
 import json
 import datetime
 from .models import * 
 from .utils import cookieCart, cartData, guestOrder
+from .mpesa import MpesaGateWay
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Your account has been created. You can now proceed to login.')
+            return redirect('login')
+    else:
+        form = UserRegisterForm()
+
+    return render(request, 'auth/register.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, f'Welcome {username}!')
+            return redirect('store')
+        else:
+            messages.error(request, 'Invalid username or password')
+            return redirect('login')
+    else:
+        form = LoginForm()
+        return render(request, 'auth/login.html', {'form': form})
+
+
+@login_required
+def customer_view(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = CustomerUpdateForm(request.POST, request.FILES, instance=request.user.customer)
+
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('customer-profile')
+        else:
+            messages.error(request, 'Problem updating your profile')
+            return redirect('customer-profile')
+    else:
+        context = {
+            'u_form': UserUpdateForm(instance=request.user),
+            'p_form': CustomerUpdateForm(instance=request.user.customer),
+        }
+        return render(request, 'auth/customer.html', context)
+        
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 
 def store(request):
 	data = cartData(request)
@@ -28,6 +95,7 @@ def cart(request):
 	return render(request, 'store/cart.html', context)
 
 def checkout(request):
+    
 	data = cartData(request)
 	
 	cartItems = data['cartItems']
@@ -36,6 +104,22 @@ def checkout(request):
 
 	context = {'items':items, 'order':order, 'cartItems':cartItems}
 	return render(request, 'store/checkout.html', context)
+
+def mpesa(request):
+	data = cartData(request)
+
+	order = data['order']
+	phonenumber = request.user.customer.mobile
+	amount = int(order.get_cart_total)
+	print(phonenumber)
+	callback_url = 'https://mydomain.com/path'
+	lipaNaMpesa = MpesaGateWay()
+	
+	stk = lipaNaMpesa.stk_push(phonenumber, amount, callback_url)
+	
+
+	return render(request, 'store/checkout.html', {'stk': stk})
+      
 
 def updateItem(request):
 	data = json.loads(request.body)

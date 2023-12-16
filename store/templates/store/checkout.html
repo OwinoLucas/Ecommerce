@@ -1,5 +1,7 @@
 {% extends 'store/main.html' %}
 {% load static %}
+
+
 {% block content %}
      <div class="row">
 		<div class="col-lg-6">
@@ -45,8 +47,16 @@
 				<small>Paypal Options</small>
 				<!--<button id="make-payment">Make payment</button>-->
 				<div id="paypal-button-container"></div>
+				<small>Mpesa Options</small>
+				<br>
+				<form method="post" action="{% url 'mpesa' %}">
+					{% csrf_token %}
+					<button class="btn btn-success btn-block">Lipa na MPESA</button>
+				</form>
+				
+
 			</div>
-			
+	
 		</div>
 
 		<div class="col-lg-6">
@@ -69,10 +79,11 @@
 		</div>
 	</div>
 
-	<script src="https://www.paypal.com/sdk/js?client-id=YOUR-CLIENT-ID&currency=USD&disable-funding=credit"></script>
+	<script src="https://www.paypal.com/sdk/js?client-id=AXR7dsQAFBSNVuRf3EGatjUsUfzrBJbwalKEmFsN9COk1XdoT6tYIQPwUv70rPiTxLN9yuj6ZCylnd5O&currency=USD&disable-funding=credit"></script>
 
 	<script>
 		var total = '{{order.get_cart_total}}'
+		console.log('{{request.user.customer.mobile}}')
         // Render the PayPal button into #paypal-button-container
         paypal.Buttons({
 
@@ -189,6 +200,8 @@
 				})
 	    }
 	</script>
+
+  
 {% endblock content %}
 
 

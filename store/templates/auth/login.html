@@ -1,0 +1,28 @@
+{% extends 'store/main.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+<div class="header-bar">
+    <h1>Login</h1>
+</div>
+<hr>
+<div class="card-body">
+    <form method="POST">
+        {% csrf_token %}
+        {{form | crispy}}
+        <input class="btn btn-success" type="submit" value="Login">
+    </form>
+    <br>
+    <p>Don't have an account? <a href="{% url 'register' %}">
+        <button class="btn btn-primary" type="button">Register</button>
+    </a></p>
+</div>
+
+
+
+
+
+
+{% endblock content %}

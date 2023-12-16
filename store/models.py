@@ -1,15 +1,48 @@
 from django.db import models
 from django.contrib.auth.models import User
+from PIL import Image
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
 class Customer(models.Model):
 	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
-	name = models.CharField(max_length=200, null=True)
 	email = models.CharField(max_length=200)
+	mobile = models.CharField(max_length=12,null=True) 
+	profile_pic = models.ImageField(default = 'default.jpg', upload_to='profile_pic/')
 
 	def __str__(self):
-		return self.name
+		return self.user.username
+	
+	def save_customer(self):
+		super().save()
+
+		img = Image.open(self.image.path)
+		if img.height > 300 or img.width > 300:
+			output_size = (300,300)
+			img.thumbnail(output_size)
+			img.save(self.image.path)
+
+	def update_customer(self, using=None, fields=None, **kwargs):
+		if fields is not None:
+			fields = set(fields)
+			deferred_fields = self.get_deferred_fields()
+			if fields.intersection(deferred_fields):
+				fields = fields.union(deferred_fields)
+		super().refresh_from_db(using, fields, **kwargs)
+
+	def delete_customer(self):
+		self.delete()
+
+	@receiver(post_save, sender=User) 
+	def create_customer(sender, instance, created, **kwargs):
+		if created:
+			Customer.objects.create(user=instance)
+  
+	@receiver(post_save, sender=User) 
+	def save_customer(sender, instance, **kwargs):
+			instance.customer.save()
 
 
 class Product(models.Model):
