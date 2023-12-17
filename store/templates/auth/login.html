@@ -12,12 +12,22 @@
     <form method="POST">
         {% csrf_token %}
         {{form | crispy}}
-        <input class="btn btn-success" type="submit" value="Login">
+        <input class="btn btn-success" style="margin-top:10px ; float: right;" type="submit" value="Login">
     </form>
-    <br>
-    <p>Don't have an account? <a href="{% url 'register' %}">
-        <button class="btn btn-primary" type="button">Register</button>
-    </a></p>
+    <br><br>
+    <div class="row">
+        <div class="col-lg-6">
+            <p>Don't have an account? <a href="{% url 'register' %}">
+                <button class="btn btn-primary" type="button">Register</button>
+            </a></p>
+        </div>
+        <div class="col-lg-6">
+            <p>Forgot Password? <a href="{% url 'password_reset' %}">
+                <button class="btn btn-outline-dark" type="button">Reset</button>
+            </a></p>
+        </div>
+    </div>
+    
 </div>
 
 

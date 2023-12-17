@@ -3,13 +3,15 @@ from django.contrib.auth.models import User
 from PIL import Image
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from phonenumber_field.modelfields import PhoneNumberField
+from .validators import validate_possible_number
 
 # Create your models here.
 
 class Customer(models.Model):
 	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
 	email = models.CharField(max_length=200)
-	mobile = models.CharField(max_length=12,null=True) 
+	mobile = PhoneNumberField( blank=True,null=True)
 	profile_pic = models.ImageField(default = 'default.jpg', upload_to='profile_pic/')
 
 	def __str__(self):
@@ -47,7 +49,7 @@ class Customer(models.Model):
 
 class Product(models.Model):
 	name = models.CharField(max_length=200)
-	price = models.FloatField()
+	price = models.IntegerField()
 	digital = models.BooleanField(default=False,null=True, blank=True)
 	image = models.ImageField(null=True, blank=True)
 

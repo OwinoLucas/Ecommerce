@@ -69,12 +69,12 @@
 				<div class="cart-row">
 					<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
 					<div style="flex:2"><p>{{item.product.name}}</p></div>
-					<div style="flex:1"><p>${{item.product.price|floatformat:2}}</p></div>
+					<div style="flex:1"><p>KSH{{item.product.price}}</p></div>
 					<div style="flex:1"><p>x{{item.quantity}}</p></div>
 				</div>
 				{% endfor %}
 				<h5>Items:   {{order.get_cart_items}}</h5>
-				<h5>Total:   ${{order.get_cart_total|floatformat:2}}</h5>
+				<h5>Total:   KSH{{order.get_cart_total}}</h5>
 			</div>
 		</div>
 	</div>
@@ -84,6 +84,7 @@
 	<script>
 		var total = '{{order.get_cart_total}}'
 		console.log('{{request.user.customer.mobile}}')
+		console.log(total)
         // Render the PayPal button into #paypal-button-container
         paypal.Buttons({
 

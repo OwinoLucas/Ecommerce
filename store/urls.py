@@ -9,25 +9,17 @@ urlpatterns = [
     path('customer/', customer_view, name='customer-profile'),
     path('logout/', logout_view, name='logout'),
     path('password-reset/',
-         auth_views.PasswordResetView.as_view(
-             template_name='password_reset.html'
-         ),
-         name='password_reset'),
+         auth_views.PasswordResetView.as_view(),
+        name='password_reset'),
     path('password-reset/done/',
-         auth_views.PasswordResetDoneView.as_view(
-             template_name='password_reset_done.html'
-         ),
-         name='password_reset_done'),
+         auth_views.PasswordResetDoneView.as_view(),
+        name='password_reset_done'),
     path('password-reset-confirm/<uidb64>/<token>/',
-         auth_views.PasswordResetConfirmView.as_view(
-             template_name='password_reset_confirm.html'
-         ),
-         name='password_reset_confirm'),
+         auth_views.PasswordResetConfirmView.as_view(),
+        name='password_reset_confirm'),
     path('password-reset-complete/',
-         auth_views.PasswordResetCompleteView.as_view(
-             template_name='password_reset_complete.html'
-         ),
-         name='password_reset_complete'),
+         auth_views.PasswordResetCompleteView.as_view(),
+        name='password_reset_complete'),
          
 
 	path('', views.store, name="store"),
